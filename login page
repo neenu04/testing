@@ -1,0 +1,484 @@
+import loginPage from "../../pages/common/loginPage"
+
+const login = new loginPage();
+
+describe('Login', () => {
+
+    beforeEach(() => {
+      
+             cy.visit('/')
+             login.gotoLogin()
+             
+    })
+
+    it("GD-1 UserPortal- Login- Verify login page", function() {
+        
+        login.getEmail().should("be.visible")
+        login.getPassword().should("be.visible")
+        login.getRememberme().should("be.visible")
+        login.getReset().should("be.visible")
+        login.getLogin().should("be.visible")
+        login.getForgotPassword().should("be.visible")
+        login.getSignup().should("be.visible")     
+     
+    })
+
+    it("GD-4 UserPortal- Login- verify login functionality with invalid credentials", function(){
+        cy.fixture('masterdata/superadmin').then(superadmin => {
+            superadmin.forEach(superadmin => {
+                if(superadmin.id==2){
+                    login.gotoLogin()
+                    login.submitLogin(superadmin.Email, superadmin.Password)
+                    
+                    cy.contains('Please enter valid Email Id').should('be.visible')
+                }
+            })
+        })
+    })
+
+    it("GD-9 UserPortal- Login- Verify login with empty fields except calculator field", function() {
+        login.gotoLogin()
+        login.submitLogin(" " ," ")
+        
+        cy.contains('Please enter Email Id').should('be.visible')  
+
+    })
+
+    it("GD-10 UserPortal- Login- verify login functionalty with unregistered email id", function(){
+        cy.fixture('masterdata/superadmin').then(superadmin => {
+            superadmin.forEach(superadmin => {
+                if(superadmin.id==3){
+                    login.gotoLogin()
+                    login.submitLogin(superadmin.Email, superadmin.Password)             
+                 cy.contains('User Not available/ Not enabled').should('be.visible')
+                }
+            })
+        })
+    })
+  
+    it("GD-11 UserPortal- Login- verify login functionalty with valid inputs", function(){
+        cy.fixture('masterdata/superadmin').then(superadmin => {
+            superadmin.forEach(superadmin => {
+                if(superadmin.id==4){
+                    login.gotoLogin()
+                    login.submitLogin(superadmin.Email, superadmin.Password)  
+                }
+            })
+        })
+    })
+
+    it("GD-44 UserPortal- Login- verify login with invalid password and valid emailid", function(){
+        cy.fixture('masterdata/superadmin').then(superadmin => {
+            superadmin.forEach(superadmin => {
+                if(superadmin.id==5){
+                    login.gotoLogin()
+                    login.submitLogin(superadmin.Email, superadmin.Password)                    
+                    cy.contains('Please try a mix of letters, numbers and symbols(!@#$%^&*).').should('be.visible')  
+                }
+            })
+        })
+    })
+
+    it("GD-84 UserPortal- Login- verify login with wrong password and valid emailid", function(){
+        cy.fixture('masterdata/superadmin').then(superadmin => {
+            superadmin.forEach(superadmin => {
+                if(superadmin.id==6){
+                    login.gotoLogin()
+                    login.submitLogin(superadmin.Email, superadmin.Password)
+                        cy.contains('Invalid Password.').should('be.visible')  
+                }
+            })
+        })
+    })  
+})
+
+describe('Forgot Password', () => {
+
+    beforeEach(() => {
+        cy.visit('/')
+        login.gotoLogin() 
+        login.getEmail().should("be.visible")
+        login.getPassword().should("be.visible")
+        login.getRememberme().should("be.visible")
+        login.getReset().should("be.visible")
+        login.getLogin().should("be.visible")
+        login.getForgotPassword().should("be.visible")
+        login.getSignup().should("be.visible")
+    })
+
+    it("GD-51 Forgot Password- Verify 'return to login link'", function() {
+
+        login.getForgotPassword().click()
+        login.getEmail().should("be.visible")
+        login.getForgotpassword_ResetButton().should("be.visible")
+        login.getForgotpassword_NeedanaccountSignup().should("be.visible")
+        login.getForgotpassword_returnlogin().should("be.visible")    
+        login.getForgotpassword_logintoreturn()//login page displayed
+        login.getEmail().should("be.visible")
+        login.getPassword().should("be.visible")
+        login.getRememberme().should("be.visible")
+        login.getReset().should("be.visible")
+        login.getLogin().should("be.visible")
+        login.getForgotPassword().should("be.visible")
+        login.getSignup().should("be.visible")   
+        
+    })
+
+    it("GD-52 Forgot Password- Verify 'return to sign up page'", function() {
+
+        login.getForgotPassword().click()
+        login.getEmail().should("be.visible")
+        login.getForgotpassword_ResetButton().should("be.visible")
+        login.getForgotpassword_NeedanaccountSignup().should("be.visible")
+        login.getForgotpassword_returnlogin().should("be.visible")        
+       
+        login.getRegsignup()//sign up page displayed
+        login.getRegfirstname().should("be.visible")
+        login.getReglastname().should("be.visible")
+        login.getRegemail().should("be.visible")
+        login.getRegPassword().should("be.visible")
+        login.getRegConfpassword().should("be.visible")
+        login.getRegcompanyname().should("be.visible")
+        login.getRegIndustry().should("be.visible")
+        login.getRegtitle().should("be.visible")
+        login.getRegregister().should("be.visible")
+        login.getRegreset().should("be.visible")
+        login.getRegreturntologin().should("be.visible")
+    })
+ 
+    it("GD-18 Forgot Password- Verify forgot password elements", function() {
+
+        login.getForgotPassword().click()
+        login.getEmail().should("be.visible")
+        login.getForgotpassword_ResetButton().should("be.visible")
+        login.getForgotpassword_NeedanaccountSignup().should("be.visible")
+        login.getForgotpassword_returnlogin().should("be.visible")
+    })
+
+    it("GD-19 Forgot Password- Verify forgot password with invalid email address", function() {
+
+        login.getForgotPassword().click()
+        cy.fixture('masterdata/superadmin').then(superadmin => {
+            superadmin.forEach(superadmin => {
+                if(superadmin.id==7){                 
+                    login.forgotreset(superadmin.Email)                                  
+                 cy.contains('Please enter valid Email Id').should('be.visible')
+                }
+            })
+        })
+    })
+ 
+    it("GD-50 Forgot Password- Verify forgot password with unregistered email id", function() {
+
+        login.getForgotPassword().click()
+        cy.fixture('masterdata/superadmin').then(superadmin => {
+            superadmin.forEach(superadmin => {
+                if(superadmin.id==8){
+                    login.forgotreset(superadmin.Email)                
+                 cy.contains('User not registered. Please Register.').should('be.visible')
+                }
+            })
+        })
+    })
+  
+    it("GD-21 UserPortal- Forgot password- Verify forgot password with empty email id", function() {
+       login.getForgotPassword().click()
+        login.forgotPassword(" ")
+                cy.contains('Please enter Email Id').should('be.visible')  
+
+    })
+
+    
+})
+
+describe('Registration', () => {
+
+    beforeEach(() => {
+        cy.visit('/')
+        login.gotoLogin() 
+        login.getEmail().should("be.visible")
+        login.getPassword().should("be.visible")
+        login.getRememberme().should("be.visible")
+        login.getReset().should("be.visible")
+        login.getLogin().should("be.visible")
+        login.getForgotPassword().should("be.visible")
+        login.getSignup().should("be.visible")
+    })
+   
+    it("GD-49 Registration- Login- Verify login link", function() {
+          
+        login.getRegsignup()//registration page displyed
+    
+        login.getRegfirstname().should("be.visible")
+        login.getReglastname().should("be.visible")
+        login.getRegemail().should("be.visible")
+        login.getRegPassword().should("be.visible")
+        login.getRegConfpassword().should("be.visible")
+        login.getRegcompanyname().should("be.visible")
+        login.getRegIndustry().should("be.visible")
+        login.getRegtitle().should("be.visible")
+        login.getRegregister().should("be.visible")
+        login.getRegreset().should("be.visible")
+        login.getReggotologin()// login page displayed
+
+        login.getEmail().should("be.visible")
+        login.getPassword().should("be.visible")
+        login.getRememberme().should("be.visible")
+        login.getReset().should("be.visible")
+        login.getLogin().should("be.visible")
+        login.getForgotPassword().should("be.visible")
+        login.getSignup().should("be.visible")  
+
+       
+        
+    })
+
+})
+
+
+
+
+Login age
+
+
+class loginPage{
+
+    gotoLogin()
+    {
+        cy.contains("Login").click()
+    }
+    enterEmail(email)
+    {
+        cy.get('[name="email"]')
+            .clear()
+            .type(email);
+        return this
+    }
+    enterPassword(password)
+    {
+        cy.get('[name="password"]')
+            .clear()
+            .type(password);
+        return this
+    }
+    submitLogin()
+    {
+        cy.get('[type="submit"]').click()
+    }
+
+    submitLogin(email,password)
+    {
+        cy.get('[name="email"]').clear().type(email);
+        cy.get('[name="password"]').clear().type(password);
+        cy.get('[type="submit"]').click()
+    }
+    
+    logout()
+    {
+        cy.get('').click()
+    }
+     
+    forgotPassword()
+    {
+        cy.get('[name="remember-me"]').clear()
+
+    }
+    forgotPassword()
+    {
+        cy.get('.btn').click()
+
+    }
+    Loginbutton()
+    {
+        cy.get('.btnSignIn').click()
+    }
+
+    //login page DOM elements
+    getEmail()
+    {
+        return cy.get('[name="email"]')
+    }
+
+    getPassword()
+    {
+        return cy.get('[name="password"]')
+    }
+    getRememberme()
+    {
+        return cy.get('[name="remember-me"]')
+    }
+    getReset()
+    {
+        return  cy.get('button').contains('Reset')
+    }
+    getLogin()
+    {
+        return cy.get('button').contains('Login')
+    }
+    getForgotPassword()
+    {
+        return cy.contains('Forgot Password?')
+    }
+    
+
+    getSignup()
+    {
+        return cy.contains('Need an account? Sign up!')
+    }
+
+    //ForgotPassword DOM elements
+    getLoginForgotPassword()
+    {
+        return cy.contains('Forgot Password?')
+    }
+    getEmail()
+    {
+        return cy.get('[name="email"]')
+    }
+    getForgotpassword_ResetButton()
+    {
+        return cy.contains('Reset Password')
+    }
+    getForgotpassword_NeedanaccountSignup()
+    {
+        return cy.contains('Need an account? Sign up!')
+    }
+    getForgotpassword_logintoreturn()
+    {
+        return  cy.contains('Return to login').click()
+    }
+    
+    getForgotpassword_signupreturn()
+    {
+        return  cy.contains('Need an account? Sign up!').click()
+    }
+    getForgotpassword_returnlogin()
+    {
+        return  cy.contains('Return to login')
+    }
+    forgotreset()
+    {
+        cy.contains('Reset Password').click()
+    }
+
+    forgotreset(email)
+    {
+        cy.get('#inputEmailAddress').type(email);
+        cy.get('.btn').click()
+        return this
+    }
+    
+//Registration page DOM elements
+getRegsignup()
+{
+    return  cy.contains('Need an account? Sign up!').click()
+}
+getRegfirstname()
+{
+    return cy.get('[name="firstname"]')
+}
+getReglastname()
+{
+    return cy.get('[name="lastname"]')
+}
+getRegemail()
+{
+    return cy.get('[name="email"]')
+}
+getRegPassword()
+{
+    return cy.get('[name="password"]')
+}
+getRegConfpassword()
+{
+    return cy.get('[name="cnfpassword"]')
+}
+getRegcompanyname()
+{
+    return cy.get('[name="company"]')
+}
+getRegIndustry()
+{
+    return cy.get('[name="industry"]')
+}
+getRegtitle()
+{
+    return cy.get('[name="title"]')
+}
+getRegreset()
+{
+    return cy.get('button')
+}
+getRegreturntologin()
+{
+    return cy.get('.btnLoginForm')
+}
+getRegregister()
+{
+    return cy.get('button')
+}
+getReggotologin()
+{
+    return cy.get('.btnLoginForm').click()
+}
+
+   
+}
+export default loginPage
+
+
+
+superadmin
+
+
+
+[
+    {
+        "id":1,
+        "Email": "gobenchmark@performetriks.com",
+        "Password": "B#nchM@rk!2021"
+    },
+    {
+        "id":2,
+        "Email":"user@",
+        "Password":"hgvgh"
+    },
+    {
+        "id":3,
+        "Email": "gobench@gmail.com",
+        "Password": "B#nchM@rk!2021"
+       
+    },
+    {
+        "id":4,
+        "Email": "mythili.duraisami@performetriks.com",
+        "Password": "basic123$"
+       
+    },
+    {
+        "id":5,
+        "Email": "gobenchmark@performetriks.com",
+        "Password": "gobenchmark@performetriks.com"
+       
+    },
+    {
+        "id":6,
+        "Email": "mythili.duraisami@performetriks.com",
+        "Password": "basic123$$$"
+       
+    },
+    {
+        "id":7,
+        "Email": "user@"
+        
+    },
+    {
+        "id":8,
+        "Email": "use@performetriks.com"
+        
+    }
+
+    
+    
+    
+]
